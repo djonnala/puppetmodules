@@ -33,7 +33,22 @@ class aem_module {
 		user => "aem",
 		command =>"cp /tmp/aem_modulefiles/cq-author-p4503.jar /u01/author/cq-author-p4503.jar &&cp /tmp/aem_modulefiles/license.properties /u01/author/license.properties && cd /u01/author  && java -jar cq-author-p4503.jar -unpack",
 	}
-	exec {'startc':
-		command =>'/u01/author/crx-quickstart/bin/start',
+	exec {'cpstrtfile':
+		path =>["/ur/bin","/usr/sbin","/bin"],
+		user => "root",
+		command => "cp /tmp/aem_modulefiles/aem6-author /etc/init.d/",
+	}
+	file {'/etc/init.d/aem6-author':
+		mode => 'a+x',
+		owner => "root",
+	}
+	exec {'sudocmd':
+		path =>["/usr/bin","/usr/sbin","/bin"],
+		user => "root",
+		command => "chkconfig aem6-author on",
+	}
+	service {'aem6-author':
+		ensure => running,
+		enable => true,
 	}
 }
